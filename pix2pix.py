@@ -589,7 +589,8 @@ def main():
             print("exporting model")
             export_saver.export_meta_graph(filename=os.path.join(a.output_dir, "export.meta"))
             export_saver.save(sess, os.path.join(a.output_dir, "export"), write_meta_graph=False)
-            tf.saved_model.simple_save(sess, 'savedmodel', {'input': input_image}, {'output': batch_output})
+            tf.saved_model.simple_save(sess, a.saved_model,
+                    {'input': input_image}, {'output': batch_output})
 
         return
 
