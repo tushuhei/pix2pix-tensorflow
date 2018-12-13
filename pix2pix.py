@@ -46,6 +46,7 @@ parser.add_argument("--beta1", type=float, default=0.5, help="momentum term of a
 parser.add_argument("--l1_weight", type=float, default=100.0, help="weight on L1 term for generator gradient")
 parser.add_argument("--gan_weight", type=float, default=1.0, help="weight on GAN term for generator gradient")
 parser.add_argument("--saved_model", type=str, default="savedmodel", help="path to save the model in SavedModel format.")
+parser.add_argument("--discrim_kernel", type=int, default=4, help="kernel size of discriminator convolution")
 
 # export options
 parser.add_argument("--output_filetype", default="png", choices=["png", "jpeg"])
@@ -95,7 +96,9 @@ def augment(image, brightness):
 
 def discrim_conv(batch_input, out_channels, stride):
     padded_input = tf.pad(batch_input, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="CONSTANT")
-    return tf.layers.conv2d(padded_input, out_channels, kernel_size=4, strides=(stride, stride), padding="valid", kernel_initializer=tf.random_normal_initializer(0, 0.02))
+    return tf.layers.conv2d(padded_input, out_channels,
+        kernel_size=a.discrim_kernel, strides=(stride, stride),
+        padding="valid", kernel_initializer=tf.random_normal_initializer(0, 0.02))
 
 
 def gen_conv(batch_input, out_channels):
