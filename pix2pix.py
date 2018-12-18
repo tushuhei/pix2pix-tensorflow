@@ -402,21 +402,23 @@ def create_generator(generator_inputs, generator_outputs_channels):
 
 def create_model(inputs, targets):
     def create_discriminator(discrim_inputs, discrim_targets):
-        n_layers = 3
+        n_layers = 5
         layers = []
 
         # 2x [batch, height, width, in_channels] => [batch, height, width, in_channels * 2]
         input = tf.concat([discrim_inputs, discrim_targets], axis=3)
 
-        # layer_1: [batch, 256, 256, in_channels * 2] => [batch, 128, 128, ndf]
+        # layer_1: [batch, 1024, 1024, in_channels * 2] => [batch, 512, 512, ndf]
         with tf.variable_scope("layer_1"):
             convolved = discrim_conv(input, a.ndf, stride=2)
             rectified = lrelu(convolved, 0.2)
             layers.append(rectified)
 
-        # layer_2: [batch, 128, 128, ndf] => [batch, 64, 64, ndf * 2]
-        # layer_3: [batch, 64, 64, ndf * 2] => [batch, 32, 32, ndf * 4]
-        # layer_4: [batch, 32, 32, ndf * 4] => [batch, 31, 31, ndf * 8]
+        # layer_2: [batch, 512, 512, ndf] => [batch, 256, 256, ndf * 2]
+        # layer_3: [batch, 256, 256, ndf * 2] => [batch, 128, 128, ndf * 4]
+        # layer_4: [batch, 128, 128, ndf * 4] => [batch, 64, 64, ndf * 8]
+        # layer_5: [batch, 64, 64, ndf * 8] => [batch, 32, 32, ndf * 16]
+        # layer_6: [batch, 32, 32, ndf * 16] => [batch, 31, 31, ndf * 32]
         for i in range(n_layers):
             with tf.variable_scope("layer_%d" % (len(layers) + 1)):
                 out_channels = a.ndf * min(2**(i+1), 8)
