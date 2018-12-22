@@ -581,11 +581,10 @@ def main():
         if a.lab_colorization:
             raise Exception("export not supported for lab_colorization")
 
-        input_image = tf.placeholder(tf.float32, shape=[CROP_SIZE, CROP_SIZE, 3])
-        batch_input = tf.expand_dims(input_image, axis=0)
+        input_image = tf.placeholder(tf.float32, shape=[None, CROP_SIZE, CROP_SIZE, 3])
 
         with tf.variable_scope("generator"):
-            batch_output = deprocess(create_generator(preprocess(batch_input), 3))
+            batch_output = deprocess(create_generator(preprocess(input_image), 3))
 
         init_op = tf.global_variables_initializer()
         restore_saver = tf.train.Saver()
